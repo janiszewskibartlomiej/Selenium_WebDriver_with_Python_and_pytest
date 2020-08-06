@@ -1,0 +1,7 @@
+/env/
+.idea
+*.pyc
+/drivers/
+/reports/
+/resources/config.cfg
+/resources/debug.log
