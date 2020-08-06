@@ -7,14 +7,14 @@ class LoginPageLocators:
     DROP_DOWN_SECTION = (By.XPATH, "//div[@id='header-account']")
     USERNAME_FIELD = (By.XPATH, "//input[@placeholder='Login']")
     PASSWORD_FIELD = (By.XPATH, "//input[@placeholder='Hasło']")
-    SUBMIT_BTN = (By.NAME, 'login')
+    SUBMIT_BUTTON = (By.NAME, 'login')
     CAPTCHA_SECTION = (By.XPATH, "//div[@class='g-recaptcha']")
     LOGOUT_BUTTON = (By.LINK_TEXT, "Wyloguj")
     MY_PROFILE = (By.XPATH, "//a[contains(text(),'Mój')]")
     LOGIN_BY_FACEBOOK = (By.XPATH, "//a[@class='loginBtn--facebook']")
     FACEBOOK_EMAIL = (By.XPATH, "//input[@id='email']")
     FACEBOOK_PASSWORD = (By.XPATH, "//input[@id='pass']")
-    FACEBOOK_LOGIN_BTN = (By.XPATH, "//button[@id='loginbutton']")
+    FACEBOOK_LOGIN_BUTTON = (By.XPATH, "//button[@id='loginbutton']")
     ALERT_MESSAGE = (By.XPATH, "//ul[@class='errorsMessages']")
 
 
