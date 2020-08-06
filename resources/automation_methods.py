@@ -27,7 +27,7 @@ class AutomationMethods:
     def __init__(self):
         self.config = ConfigParser()
         self.config_path = self.get_path_from_file_name(file_name="config.cfg")
-        self.post = self.get_section_from_config(section_name="post")
+        self.post = self.get_section_from_config(section_name="Post")
 
     # template of date example >> 20200715
     def current_date_str_from_number(self) -> str:

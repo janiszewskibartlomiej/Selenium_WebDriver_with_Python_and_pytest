@@ -1,4 +1,5 @@
 import time
+from configparser import ConfigParser
 
 import pytest
 from selenium import webdriver
@@ -7,6 +8,18 @@ from selenium.webdriver.common.keys import Keys
 
 from resources.automation_methods import AutomationMethods
 
+
+@pytest.fixture
+def test_data():
+    config = ConfigParser()
+    config_path = AutomationMethods().get_path_from_file_name(file_name="config.cfg")
+    config.read(config_path)
+    data = dict()
+    common_data = config.items("Common_data")
+    data.update(dict(common_data))
+    staging_data = config.items("Staging")
+    data.update(dict(staging_data))
+    return data
 
 @pytest.fixture(params=["chrome", "firefox", "ie"])
 def driver(request, chrome_del_cashe=False, chrome_headless=True, firefox_del_cashe=False, firefox_headless=True,
@@ -61,3 +74,4 @@ def driver(request, chrome_del_cashe=False, chrome_headless=True, firefox_del_ca
     driver.maximize_window()
     yield driver
     driver.quit()
+
