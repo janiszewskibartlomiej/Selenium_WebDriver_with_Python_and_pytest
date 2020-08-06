@@ -12,5 +12,5 @@ def test_TS01_TC001_successful_login_with_username(request, driver, test_data):
     assert login_page.element_is_visible(LoginPageLocators.LOGOUT_BUTTON) is True
     login_page.assert_element_text(LoginPageLocators.LOGOUT_BUTTON, TXT.LOGOUT_BUTTON)
     login_page.click_on_and_wait_for_a_new_page(LoginPageLocators.LOGOUT_BUTTON)
-    assert login_page.element_is_visible(LoginPageLocators.SUBMIT_BTN) is True
-    login_page.assert_element_text(LoginPageLocators.SUBMIT_BTN, TXT.LOGIN_BUTTON)
+    assert login_page.element_is_visible(LoginPageLocators.SUBMIT_BUTTON) is True
+    login_page.assert_element_text(LoginPageLocators.SUBMIT_BUTTON, TXT.LOGIN_BUTTON)
