@@ -5,7 +5,7 @@ import sys
 import time
 import zipfile
 from configparser import ConfigParser
-from datetime import date
+from datetime import date, timedelta
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
@@ -27,23 +27,25 @@ class AutomationMethods:
     def __init__(self):
         self.config = ConfigParser()
         self.config_path = self.get_path_from_file_name(file_name="config.cfg")
-        self.post = self.get_section_from_config(section_name="Post")
+        self.post = self.get_section_from_config(section_list=["Post"])
+        self.reports_path = self.get_path_from_dictionary_name(dictionary_name="reports")
 
     # template of date example >> 20200715
-    def current_date_str_from_number(self) -> str:
+    def current_date_str_from_number(self, sub_day=0) -> str:
         current_date = date.today()
-        current_date_template = str(current_date).replace("-", "")
+        date_solution = current_date + timedelta(days=sub_day)
+        current_date_template = str(date_solution).replace("-", "")
         return current_date_template
 
     def removing_directories_in_reports_by_number_of_day(self, n_day: int) -> str:
         list_remove_directory = []
-        current_date_sub_days = int(self.current_date_str_from_number()) - n_day
+        current_date_sub_days = int(self.current_date_str_from_number(sub_day=n_day))
 
-        entries = Path('./reports')
+        entries = Path(self.reports_path)
         for entry in entries.iterdir():
             try:
                 if int(entry.name) <= current_date_sub_days:
-                    shutil.rmtree(f"./reports/{entry.name}")
+                    shutil.rmtree(f"{self.reports_path}/{entry.name}")
                     list_remove_directory.append(entry.name)
             except ValueError:
                 continue
@@ -53,7 +55,7 @@ class AutomationMethods:
     def html_test_runner_report(self) -> HtmlTestRunner:
         current_date_template = self.current_date_str_from_number()
 
-        domain = self.get_section_from_config(section_name="Staging")["domain"]
+        domain = self.get_section_from_config(section_list=["Staging"])["domain"]
         report_title = f"Test Results of {domain}"
 
         domain_strip = domain[:14]
@@ -80,11 +82,10 @@ class AutomationMethods:
     def run_pytest_html_and_allure_report(self, by_name=None) -> list:
         allure_json_path = self.get_path_from_dictionary_name(dictionary_name="allure_json")
         allure_html_reports_path = self.get_path_from_dictionary_name(dictionary_name="HTML_reports")
-        reports_path = self.get_path_from_dictionary_name(dictionary_name="reports")
 
         current_date = self.current_date_str_from_number()
 
-        pytest_html_report_path = f"{reports_path}\\{current_date}\\pytest_hipp9-staging_report_{int(time.time())}.html"
+        pytest_html_report_path = f"{self.reports_path}\\{current_date}\\pytest_hipp9-staging_report_{int(time.time())}.html"
         if by_name:
             flag_and_name = f"-k {by_name}"
         else:
@@ -122,10 +123,13 @@ class AutomationMethods:
                     abs_path = os.path.join(root, dictionary)
                     return abs_path
 
-    def get_section_from_config(self, section_name: str) -> dict:
+    def get_section_from_config(self, section_list: list) -> dict:
         self.config.read(self.config_path)
-        data = self.config.items(section_name)
-        return dict(data)
+        data = dict()
+        for item in section_list:
+            section = self.config.items(item)
+            data.update(section)
+        return data
 
     def get_set_from_links_file(self, file_name: str) -> set:
         file_path = self.get_path_from_file_name(file_name)
@@ -232,7 +236,8 @@ class AutomationMethods:
     def send_email(self, send_to=None, subject=None, message_conntent=None, files=None, use_tls=True):
 
         if send_to is None:
-            send_to = self.post["receiver_email"]
+            # send_to = self.post["receiver_email"]
+            send_to = self.post["sender_email"]
         else:
             send_to = send_to
 

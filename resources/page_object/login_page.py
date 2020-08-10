@@ -15,23 +15,23 @@ class LoginPage(BasePage):
         url = f'{self.base_url}//klub/zaloguj-sie'
         self.driver.get(url)
 
-    def login_as(self, username: str, password: str, submit=True):
+    def login_as(self, username: str, password: str, enter_key=False):
 
         self.enter_text(LoginPageLocators.USERNAME_FIELD, username)
-        if submit == False:
+        if enter_key:
             self.enter_text_and_click_enter_and_wait_for_a_new_page(LoginPageLocators.PASSWORD_FIELD, password)
         else:
             self.enter_text(LoginPageLocators.PASSWORD_FIELD, password)
-            self.click_on_and_wait_for_a_new_page(LoginPageLocators.SUBMIT_BTN)
+            self.click_on_and_wait_for_a_new_page(LoginPageLocators.SUBMIT_BUTTON)
         time.sleep(3)
 
-    def incorrect_login_as(self, username: str, password: str, submit=True):
+    def incorrect_login_as(self, username: str, password: str, enter_key=False):
         self.enter_text(LoginPageLocators.USERNAME_FIELD, username)
-        if submit == False:
+        if enter_key:
             self.enter_text_and_click_enter(LoginPageLocators.PASSWORD_FIELD, password)
         else:
             self.enter_text(LoginPageLocators.PASSWORD_FIELD, password)
-            self.click_on(LoginPageLocators.SUBMIT_BTN)
+            self.click_on(LoginPageLocators.SUBMIT_BUTTON)
         while not self.page_is_loading():
             continue
         time.sleep(3)

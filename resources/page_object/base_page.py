@@ -22,12 +22,13 @@ class BasePage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.base_url = AutomationMethods().get_section_from_config(section_name="Staging")["access"]
+        self.base_url = AutomationMethods().get_section_from_config(section_list=["Staging"])["access"]
 
     def click_on_and_wait_for_a_new_page(self, by_loctor: tuple):
         old_page = self.driver.find_element_by_tag_name('html')
         web_element = WebDriverWait(self.driver, 100).until(EC.element_to_be_clickable(by_loctor))
         web_element.click()
+        # new_page = self.driver.find_element_by_tag_name('html')
         WebDriverWait(self.driver, 100).until(EC.staleness_of(old_page))
         time.sleep(1)
 
@@ -45,7 +46,8 @@ class BasePage:
     def assert_element_text_in_page_source(self, element_text: str):
         while not self.page_is_loading():
             continue
-        assert element_text in self.driver.page_source
+        page_source = self.driver.page_source
+        assert element_text in page_source
 
     def assert_element_color_hex(self, by_locator: tuple, color_hex: str):
         web_element = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(by_locator))
@@ -108,8 +110,8 @@ class BasePage:
         self.driver.close()
         self.driver.quit()
 
-    def visit(self, location: str):
-        url = self.base_url + location
+    def visit_page(self, endpoit: str):
+        url = self.base_url + endpoit
         return self.driver.get(url)
 
     def open_new_tab_and_switch(self):
@@ -203,13 +205,14 @@ class BasePage:
 
         current_date = date.today()
         current_date_template = str(current_date).replace("-", "")
-        if not os.path.exists('reports/' + current_date_template):
-            os.makedirs('reports/' + current_date_template)
+        reports_path = AutomationMethods().get_path_from_dictionary_name(dictionary_name="reports")
+        reports_path = reports_path.replace("\\", "/")
+        if not os.path.exists(f"{reports_path}/{current_date_template}"):
+            os.makedirs(f"{reports_path}/{current_date_template}")
 
         t = time.localtime()
         current_time = time.strftime("%H-%M-%S", t)
-        path = f"reports/{current_date_template}/screenshot_{name}{current_time}.png"
+        path = f"{reports_path}/{current_date_template}/screenshot_{name}_{current_time}.png"
         self.driver.get_screenshot_as_file(path)
         self.driver.set_window_size(original_size['width'], original_size['height'])
-
 

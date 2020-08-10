@@ -22,8 +22,8 @@ def test_data():
     return data
 
 @pytest.fixture(params=["chrome", "firefox", "ie"])
-def driver(request, chrome_del_cashe=False, chrome_headless=True, firefox_del_cashe=False, firefox_headless=True,
-           ie_del_cashe=False):
+def driver(request, chrome_del_cache=False, chrome_headless=True, firefox_del_cache=False, firefox_headless=True,
+           ie_del_cache=True):
     global driver
     if request.param == "chrome":
         chrome_path = AutomationMethods().get_path_from_file_name("chromedriver.exe")
@@ -32,7 +32,7 @@ def driver(request, chrome_del_cashe=False, chrome_headless=True, firefox_del_ca
             chrome_options.add_argument('--headless')
         driver = webdriver.Chrome(executable_path=chrome_path, options=chrome_options)
 
-        if chrome_del_cashe:
+        if chrome_del_cache:
             driver.get('chrome://settings/clearBrowserData')
             action = ActionChains(driver)
             time.sleep(2)
@@ -42,7 +42,7 @@ def driver(request, chrome_del_cashe=False, chrome_headless=True, firefox_del_ca
         profile = webdriver.FirefoxProfile()
         profile.accept_untrusted_certs = True
 
-        if firefox_del_cashe:
+        if firefox_del_cache:
             profile.set_preference('browser.cache.disk.enable', False)
             profile.set_preference('browser.cache.memory.enable', False)
             profile.set_preference('browser.cache.offline.enable', False)
@@ -58,7 +58,7 @@ def driver(request, chrome_del_cashe=False, chrome_headless=True, firefox_del_ca
                                    options=firefox_options)
 
     if request.param == "ie":
-        if ie_del_cashe:
+        if ie_del_cache:
             caps = DesiredCapabilities.INTERNETEXPLORER
             caps['ignoreProtectedModeSettings'] = True
             caps['enableElementCacheCleanup'] = True

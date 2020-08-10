@@ -5,3 +5,4 @@
 /reports/
 /resources/config.cfg
 /resources/debug.log
+*.log
