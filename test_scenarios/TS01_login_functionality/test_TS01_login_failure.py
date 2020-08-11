@@ -8,24 +8,24 @@ from resources.validation_text_data import ValidationTextData as txt
 test_data: dict = AutomationMethods().get_section_from_config(section_list=["Common_data", "Staging"])
 
 
-@pytest.mark.parametrize("user, password, enter_key, login_by_facebook", [
-    (test_data["user_email"], test_data["incorrect_password_1"], False, False),  # correct email and incorrect password
-    (test_data["user_email"], test_data["incorrect_password_2"], True, False),  # correct email and incorrect password
-    (test_data["incorrect_email_1"], test_data["password"], False, False),  # incorrect email and correct password
-    (test_data["incorrect_email_2"], test_data["password"], True, False),  # incorrect email and correct password
-    (' ' + test_data["user_email"], ' ' + test_data["password"], False, False),
+@pytest.mark.parametrize("user, password, enter_key", [
+    (test_data["user_email"], test_data["incorrect_password_1"], False),  # correct email and incorrect password
+    (test_data["user_email"], test_data["incorrect_password_2"], True),  # correct email and incorrect password
+    (test_data["incorrect_email_1"], test_data["password"], False),  # incorrect email and correct password
+    (test_data["incorrect_email_2"], test_data["password"], True),  # incorrect email and correct password
+    (' ' + test_data["user_email"], ' ' + test_data["password"], False),
     # correct email and correct password with space key
-    (' ' + test_data["user_email"], ' ' + test_data["password"], True, False),
+    (' ' + test_data["user_email"], ' ' + test_data["password"], True),
     # correct email and correct password with space key
-    ('', '', False, False),  # email and password are left blank
-    ('', '', True, False),  # email and password are left blank
-    (' ', ' ', False, False),  # email and password are white space
-    (' ', ' ', True, False),  # email and password are white space
-    (test_data["password"], test_data["user_email"], False, False),  # reverse data input
-    (test_data["password"], test_data["user_email"], True, False)  # reverse data input
+    ('', '', False),  # email and password are left blank
+    ('', '', True),  # email and password are left blank
+    (' ', ' ', False),  # email and password are white space
+    (' ', ' ', True),  # email and password are white space
+    (test_data["password"], test_data["user_email"], False),  # reverse data input
+    (test_data["password"], test_data["user_email"], True)  # reverse data input
 ])
 @pytest.mark.login
-def test_TS01_failed_login(request, driver, user, password, enter_key, login_by_facebook):
+def test_TS01_failed_login(request, driver, user, password, enter_key):
     try:
         login_page = LoginPage(driver=driver)
         login_page.assert_path_in_current_url(path=txt.LOGIN_ENDPOINT)
