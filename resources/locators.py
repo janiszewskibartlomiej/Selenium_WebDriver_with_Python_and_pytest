@@ -10,7 +10,7 @@ class LoginPageLocators:
     SUBMIT_BUTTON = (By.NAME, 'login')
     CAPTCHA_SECTION = (By.XPATH, "//div[@class='g-recaptcha']")
     LOGOUT_BUTTON = (By.LINK_TEXT, "Wyloguj")
-    MY_PROFILE = (By.XPATH, "//a[contains(text(),'Mój')]")
+    MY_PROFILE = (By.LINK_TEXT, "Mój profil")
     LOGIN_BY_FACEBOOK = (By.XPATH, "//a[@class='loginBtn--facebook']")
     FACEBOOK_EMAIL = (By.XPATH, "//input[@id='email']")
     FACEBOOK_PASSWORD = (By.XPATH, "//input[@id='pass']")
@@ -21,6 +21,7 @@ class LoginPageLocators:
 
 class HomePageLocators:
     ICON_ACCOUNT = (By.XPATH, "//a[@class='skip-link skip-account']")
+    LOGIN_BUTTON_IN_DROP_DOWN_SECTION = (By.LINK_TEXT, "Zaloguj")
 
 
 class AddBabyLocators:

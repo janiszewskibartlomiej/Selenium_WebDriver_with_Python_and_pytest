@@ -6,3 +6,6 @@ class ValidationTextData:
     LOGIN_ENDPOINT = '/klub/zaloguj-sie'
     AFTER_LOGIN_ENDPOINT = '/klub-logged-in/moj-klub-maluszka'
     INPUT_TAG = "input"
+    VALIDATION_ENDPOINT = "/walidacja"
+    CAPTCHA = "reCAPTCHA"
+    MY_PROFILE_LINK_TEXT = "Mój profil"
