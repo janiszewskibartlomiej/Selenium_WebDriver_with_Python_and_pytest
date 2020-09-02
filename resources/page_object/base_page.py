@@ -22,7 +22,19 @@ class BasePage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.base_url = AutomationMethods().get_section_from_config(section_list=["Staging"])["access"]
+        # self.base_url = AutomationMethods().get_section_from_config(section_list=["Staging"])["access"]
+        self.base_url = AutomationMethods().get_section_from_config(section_list=["Staging"])["access_doctor_page"]
+
+    def get_user_name(self):
+        staging_data = AutomationMethods().get_section_from_config(section_list=["Staging"])
+
+        if self.base_url == staging_data["access"]:
+            user_name = staging_data["user_name"]
+
+        elif self.base_url == staging_data["access_doctor_page"]:
+            user_name = staging_data["user_name_doctor_page"]
+
+        return user_name
 
     def click_on_and_wait_for_a_new_page(self, by_loctor: tuple):
         old_page = self.driver.find_element_by_tag_name('html')
@@ -142,16 +154,7 @@ class BasePage:
             random_street_name = random_street_data.split(";")
             return random_street_name[7]
 
-    def get_date_from_delta_n_day(self, add_days: int) -> dict:
-        today = datetime.today()
-        future_date = today + timedelta(days=add_days)
-        date_slice = datetime.strftime(future_date, "%Y-%m-%d")
-        date_dict = {
-            "day": date_slice[-2:],
-            "month": date_slice[5:7],
-            "year": date_slice[:4]
-        }
-        return date_dict
+
 
     def get_random_post_code_and_town_name_from_csv(self, path: str) -> dict:
         with open(file=str(path), encoding="utf8", mode="r") as file:

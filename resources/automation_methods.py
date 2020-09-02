@@ -5,7 +5,8 @@ import sys
 import time
 import zipfile
 from configparser import ConfigParser
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
+
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
@@ -26,8 +27,6 @@ class AutomationMethods:
 
     def __init__(self):
         self.config = ConfigParser()
-        self.config_path = self.get_path_from_file_name(file_name="config.cfg")
-        self.post = self.get_section_from_config(section_list=["Post"])
         self.reports_path = self.get_path_from_dictionary_name(dictionary_name="reports")
 
     # template of date example >> 20200715
@@ -39,7 +38,7 @@ class AutomationMethods:
 
     def removing_directories_in_reports_by_number_of_day(self, n_day: int) -> str:
         list_remove_directory = []
-        current_date_sub_days = int(self.current_date_str_from_number(sub_day=n_day))
+        current_date_sub_days = int(self.current_date_str_from_number(sub_day=-n_day))
 
         entries = Path(self.reports_path)
         for entry in entries.iterdir():
@@ -124,7 +123,8 @@ class AutomationMethods:
                     return abs_path
 
     def get_section_from_config(self, section_list: list) -> dict:
-        self.config.read(self.config_path)
+        path = self.get_path_from_file_name(file_name="config.cfg")
+        self.config.read(path)
         data = dict()
         for item in section_list:
             section = self.config.items(item)
@@ -141,7 +141,8 @@ class AutomationMethods:
                 slice_links.add(element)
         return slice_links
 
-    def get_driver(self, browser_name="chrome", headless=True, ie_del_cashe=False, firefox_del_cashe=False, chrome_del_cash=False):
+    def get_driver(self, browser_name="chrome", headless=True, ie_del_cashe=False, firefox_del_cashe=False,
+                   chrome_del_cash=False):
         if browser_name == "chrome":
             chrome_options = webdriver.ChromeOptions()
 
@@ -234,22 +235,23 @@ class AutomationMethods:
         return incorrect_status_code
 
     def send_email(self, send_to=None, subject=None, message_conntent=None, files=None, use_tls=True):
+        post = self.get_section_from_config(section_list=["Post"])
 
         if send_to is None:
-            # send_to = self.post["receiver_email"]
-            send_to = self.post["sender_email"]
+            # send_to = post["receiver_email"]
+            send_to = post["test"]
         else:
             send_to = send_to
 
         if subject is None:
-            subject = self.post["subject"]
+            subject = post["subject"]
         else:
             subject = subject
 
         if message_conntent is None:
             message_conntent = """
             Cześć,\n 
-            W załączeniu przesyłam raport z wynikami testów. \n
+            W załączeniu przesyłam raport z wynikami testów stworzonymi w pytest. \n
             Pozdro Bart
             """
         else:
@@ -258,10 +260,10 @@ class AutomationMethods:
         if files is None:
             files = []
 
-        sender_email = self.post["sender_email"]
-        smtp_server = self.post["smtp_server"]
+        sender_email = post["sender_email"]
+        smtp_server = post["smtp_server"]
         port = 25
-        password = self.post["password"]
+        password = post["password"]
 
         message = MIMEMultipart()
         message["From"] = sender_email
@@ -290,6 +292,17 @@ class AutomationMethods:
                 server.ehlo_or_helo_if_needed()
             server.login(user=sender_email, password=password)
             server.send_message(message)
+
+    def get_date_from_delta_n_day(self, add_days: int) -> dict:
+        today = datetime.today()
+        future_date = today + timedelta(days=add_days)
+        date_slice = datetime.strftime(future_date, "%Y-%m-%d")
+        date_dict = {
+            "day": date_slice[-2:],
+            "month": date_slice[5:7],
+            "year": date_slice[:4]
+        }
+        return date_dict
 
 
 if __name__ == '__main__':
