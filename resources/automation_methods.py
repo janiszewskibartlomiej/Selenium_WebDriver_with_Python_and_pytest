@@ -102,7 +102,8 @@ class AutomationMethods:
         allure_zip_path = allure_zip_path.replace("\\", "/")
         return [pytest_path, allure_zip_path]
 
-    def get_path_from_file_name(self, file_name: str) -> str:
+    @staticmethod
+    def get_path_from_file_name(file_name: str) -> str:
         path = sys.path[1]
         if path[-3:] == "zip":
             path = sys.path[0]
@@ -112,7 +113,8 @@ class AutomationMethods:
                     abs_path = os.path.join(root, file)
                     return abs_path
 
-    def get_path_from_dictionary_name(self, dictionary_name: str) -> str:
+    @staticmethod
+    def get_path_from_dictionary_name(dictionary_name: str) -> str:
         path = sys.path[1]
         if path[-3:] == "zip":
             path = sys.path[0]
@@ -172,7 +174,7 @@ class AutomationMethods:
             else:
                 caps = {}
 
-            ie_path = AutomationMethods().get_path_from_file_name(file_name="IEDriverServer.exe")
+            ie_path = AutomationMethods.get_path_from_file_name(file_name="IEDriverServer.exe")
             driver = webdriver.Ie(executable_path=ie_path, capabilities=caps)
             driver.set_page_load_timeout(30)
             driver.implicitly_wait(1)
@@ -193,7 +195,7 @@ class AutomationMethods:
             if headless:
                 firefox_options.add_argument('--headless')
 
-            firefox_path = AutomationMethods().get_path_from_file_name(file_name="geckodriver.exe")
+            firefox_path = AutomationMethods.get_path_from_file_name(file_name="geckodriver.exe")
             driver = webdriver.Firefox(executable_path=firefox_path, firefox_profile=profile,
                                        options=firefox_options)
             driver.set_page_load_timeout(30)

@@ -20,7 +20,7 @@ class LoginPage(BasePage):
         url = f'{self.base_url}//{self.endpoint}'
         self.driver.get(url)
 
-    def login_as(self, username: str, password: str, enter_key=False):
+    def login_as(self, username, password, enter_key=False):
 
         self.enter_text(LoginPageLocators.USERNAME_FIELD, username)
         if enter_key:
@@ -32,7 +32,7 @@ class LoginPage(BasePage):
             continue
         time.sleep(3)
 
-    def incorrect_login_as(self, username: str, password: str, enter_key=False):
+    def incorrect_login_as(self, username, password, enter_key=False):
         self.enter_text(LoginPageLocators.USERNAME_FIELD, username)
         if enter_key:
             self.enter_text_and_click_enter(LoginPageLocators.PASSWORD_FIELD, password)

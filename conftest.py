@@ -7,6 +7,8 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver import ActionChains, DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.firefox import GeckoDriverManager
 
 from resources.automation_methods import AutomationMethods
 
@@ -47,7 +49,7 @@ def pytest_html_results_summary(prefix, summary, postfix):
 @pytest.fixture(name="test_data_from_fixture")
 def test_data():
     config = ConfigParser()
-    config_path = AutomationMethods().get_path_from_file_name(file_name="config.cfg")
+    config_path = AutomationMethods.get_path_from_file_name(file_name="config.cfg")
     config.read(config_path)
     data = dict()
     common_data = config.items("Common_data")
@@ -64,17 +66,15 @@ def driver(
     chrome_headless=False,
     firefox_del_cache=False,
     firefox_headless=False,
-    ie_del_cache=True,
+    ie_del_cache=True
 ):
-    # global driver
+    driver = None
     if request.param == "chrome":
-        chrome_path = AutomationMethods().get_path_from_file_name("chromedriver.exe")
-        # chrome_path = "drivers/chromedriver.exe"
         chrome_options = webdriver.ChromeOptions()
         if chrome_headless:
             chrome_options.add_argument("--headless")
 
-        driver = webdriver.Chrome(executable_path=chrome_path, options=chrome_options)
+        driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
 
         if chrome_del_cache:
             driver.get("chrome://settings/clearBrowserData")
@@ -97,13 +97,8 @@ def driver(
         if firefox_headless:
             firefox_options.add_argument("--headless")
 
-        firefox_path = AutomationMethods().get_path_from_file_name(
-            file_name="geckodriver.exe"
-        )
-        # firefox_path = "drivers/geckodriver.exe"
-
         driver = webdriver.Firefox(
-            executable_path=firefox_path,
+            executable_path=GeckoDriverManager().install(),
             firefox_profile=profile,
             options=firefox_options,
         )
@@ -117,7 +112,7 @@ def driver(
         else:
             caps = {}
 
-        ie_path = AutomationMethods().get_path_from_file_name(
+        ie_path = AutomationMethods.get_path_from_file_name(
             file_name="IEDriverServer.exe"
         )
         # ie_path = "drivers/IEDriverServer.exe"

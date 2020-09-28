@@ -10,16 +10,21 @@ test_data: dict = AutomationMethods().get_section_from_config(
 )
 
 
-def user_name() -> str:
+def user() -> str:
     login_page = LoginPage(driver=AutomationMethods().get_driver())
     return login_page.get_user_name()
 
 
-def facebook_login() -> bool:
-    if user_name() == test_data["user_name_doctor_page"]:
+def facebook() -> bool:
+    user_name = user()
+    if user_name == test_data["user_name_doctor_page"]:
         return False
     else:
         return True
+
+
+user_name = user()
+facebook_login = facebook()
 
 
 @pytest.mark.login
@@ -27,13 +32,13 @@ def facebook_login() -> bool:
     "user, password, enter_key, login_by_facebook",
     [
         (
-                user_name(),
+                user_name,
                 test_data["password"],
                 True,
                 False,
         ),  # login by user name, submit enter
         (
-                user_name(),
+                user_name,
                 test_data["password"],
                 False,
                 False,
@@ -70,7 +75,7 @@ def facebook_login() -> bool:
                 test_data["user_email"],
                 test_data["password"],
                 False,
-                facebook_login(),
+                facebook_login,
         ),  # login by facebook
     ],
 )
@@ -78,6 +83,7 @@ def test_TS01_successful_login(
         request, driver, user, password, enter_key, login_by_facebook
 ):
     try:
+        # given
         login_page = LoginPage(driver=driver)
         login_page.assert_path_in_current_url(path=login_page.endpoint)
         username_input = login_page.get_element(
@@ -89,6 +95,7 @@ def test_TS01_successful_login(
         )
         assert password_input.tag_name == txt.INPUT_TAG
 
+        # when
         if login_by_facebook:
             login_page.click_on_and_wait_for_a_new_page(
                 by_loctor=LoginPageLocators.LOGIN_BY_FACEBOOK
@@ -116,6 +123,8 @@ def test_TS01_successful_login(
         drop_down = login_page.get_element(
             by_locator=LoginPageLocators.DROP_DOWN_SECTION
         )
+
+        # then
         assert txt.LOGIN_INFORMATION_IN_DROPDOWN in drop_down.get_attribute("innerHTML")
         login_page.assert_element_text_in_page_source(
             element_text=txt.LOGIN_INFORMATION_IN_DROPDOWN

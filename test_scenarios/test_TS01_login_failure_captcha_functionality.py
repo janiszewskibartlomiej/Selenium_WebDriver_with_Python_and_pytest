@@ -58,7 +58,7 @@ data = AutomationMethods().get_section_from_config(
                 True,
                 True,
         ),  # captcha is visible after three times incorrect login total quantity - use enter key
-    ],
+    ]
 )
 def test_TS01_failed_login_captcha_functionality(
         request,
@@ -74,6 +74,7 @@ def test_TS01_failed_login_captcha_functionality(
         one_correct_login,
 ):
     try:
+        # given
         home_page = HomePage(driver=driver)
         home_page.click_on(by_loctor=HomePageLocators.ICON_ACCOUNT)
         home_page.click_on_and_wait_for_a_new_page(
@@ -86,6 +87,8 @@ def test_TS01_failed_login_captcha_functionality(
             home_page.assert_path_in_current_url(path=txt.LOGIN_ENDPOINT_DOCTOR_PAGE)
 
         login_page = LoginPage(driver=driver)
+
+        # when
         login_page.incorrect_login_as(
             username=user_first, password=password_first, enter_key=enter_key
         )
@@ -106,6 +109,8 @@ def test_TS01_failed_login_captcha_functionality(
         login_page.incorrect_login_as(
             username=user_third, password=password_third, enter_key=enter_key
         )
+
+        # then
         login_page.click_on(by_loctor=LoginPageLocators.CAPTCHA_SECTION)
         print(f"{request.node.name} is done " + "\U0001F44D")
     except:

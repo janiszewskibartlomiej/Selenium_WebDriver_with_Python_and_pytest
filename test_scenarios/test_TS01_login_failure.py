@@ -47,7 +47,10 @@ test_data: dict = AutomationMethods().get_section_from_config(
     ],
 )
 def test_TS01_failed_login(request, driver, user, password, enter_key):
+    login_page = None
+
     try:
+        # given
         login_page = LoginPage(driver=driver)
         login_page.assert_path_in_current_url(path=login_page.endpoint)
         login_page.visit_page(endpoit=login_page.endpoint)
@@ -55,9 +58,13 @@ def test_TS01_failed_login(request, driver, user, password, enter_key):
         login_page.assert_element_text(
             LoginPageLocators.SUBMIT_BUTTON, txt.LOGIN_BUTTON
         )
+
+        # when
         login_page.incorrect_login_as(
             username=user, password=password, enter_key=enter_key
         )
+
+        # then
         login_page.assert_path_in_current_url(path=login_page.endpoint)
         login_page.click_on(LoginPageLocators.ICON_ACCOUNT)
         assert (

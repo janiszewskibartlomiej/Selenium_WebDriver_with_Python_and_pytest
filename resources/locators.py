@@ -60,3 +60,11 @@ class ListOfChildrenLocators:
     NAME_IN_TRIANGLE = (By.XPATH, "//span[@class='triangle-childname']")
     ALERT_ICON = (By.XPATH, "//span[@class='alert-icon']")
     ALERT_CONTENT = (By.XPATH, "//div[@class='alert-content']")
+
+
+class Typo3Locators:
+    USERNAME_TYPO3 = (By.ID, "t3-username")
+    PASSWORD_TYPO3 = (By.ID, "t3-password")
+    LOGIN_BUTTON_TYPO3 = (By.ID, "t3-login-submit")
+    USERS_DIRECTORY = (By.XPATH, "//*[contains(@title,'id=743')]")
+    NOTIFICATIONS_CLOSE = (By.CLASS_NAME, "t3js-icon icon icon-size-small icon-state-default icon-actions-close")

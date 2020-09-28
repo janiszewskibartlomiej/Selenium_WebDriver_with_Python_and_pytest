@@ -27,6 +27,7 @@ class BasePage:
 
     def get_user_name(self):
         staging_data = AutomationMethods().get_section_from_config(section_list=["Staging"])
+        user_name = None
 
         if self.base_url == staging_data["access"]:
             user_name = staging_data["user_name"]
@@ -208,7 +209,7 @@ class BasePage:
 
         current_date = date.today()
         current_date_template = str(current_date).replace("-", "")
-        reports_path = AutomationMethods().get_path_from_dictionary_name(dictionary_name="reports")
+        reports_path = AutomationMethods.get_path_from_dictionary_name(dictionary_name="reports")
         reports_path = reports_path.replace("\\", "/")
         if not os.path.exists(f"{reports_path}/{current_date_template}"):
             os.makedirs(f"{reports_path}/{current_date_template}")
