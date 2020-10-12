@@ -1,9 +1,11 @@
+import os
 import time
 from configparser import ConfigParser
 from datetime import datetime
 
 from py.xml import html
 import pytest
+
 from selenium import webdriver
 from selenium.webdriver import ActionChains, DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
@@ -13,6 +15,10 @@ from webdriver_manager.firefox import GeckoDriverManager
 from resources.automation_methods import AutomationMethods
 
 render_collapsed = True
+
+
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+os.environ["PATH"] += os.pathsep + PROJECT_ROOT
 
 
 def pytest_html_results_table_header(cells):
@@ -59,14 +65,28 @@ def test_data():
     return data
 
 
+@pytest.fixture(params=["home", "expert"])
+def base_url(request):
+    base_url = None
+
+    if request.param == "home":
+        base_url = AutomationMethods().get_section_from_config(section_list=["Staging"])["access"]
+
+    if request.param == "expert":
+        base_url = AutomationMethods().get_section_from_config(section_list=["Staging"])["access_doctor_page"]
+
+    yield base_url
+    pass
+
+
 @pytest.fixture(params=["chrome", "firefox", "ie"])
 def driver(
-    request,
-    chrome_del_cache=False,
-    chrome_headless=False,
-    firefox_del_cache=False,
-    firefox_headless=False,
-    ie_del_cache=True
+        request,
+        chrome_del_cache=False,
+        chrome_headless=False,
+        firefox_del_cache=False,
+        firefox_headless=False,
+        ie_del_cache=True
 ):
     driver = None
     if request.param == "chrome":

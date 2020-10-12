@@ -8,12 +8,19 @@ from resources.validation_text_data import ValidationTextData as txt
 
 
 class AddBabyPage(BasePage):
-
     def __init__(self, driver):
         super().__init__(driver)
-        common_data = AutomationMethods().get_section_from_config(section_list=["Common_data"])
-        LoginPage(self.driver).login_as(username=common_data["user_email"], password=common_data["password"])
-        url = f'{self.base_url}{txt.ADD_BABY_ENDPOINT}'
+        self.base_url = AutomationMethods().get_section_from_config(
+            section_list=["Staging"]
+        )["access"]
+
+        common_data = AutomationMethods().get_section_from_config(
+            section_list=["Common_data"]
+        )
+        LoginPage(self.driver, self.base_url).login_as(
+            username=common_data["user_email"], password=common_data["password"]
+        )
+        url = f"{self.base_url}/{txt.ADD_BABY_ENDPOINT}"
         self.driver.get(url)
 
     def select_date(self, day: str, month: str, year: str, pregnant=True):

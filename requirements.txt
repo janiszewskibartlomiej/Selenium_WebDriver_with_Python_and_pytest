@@ -1,5 +1,5 @@
 selenium
-html-testRunner
 pytest
 pytest-html
 allure-pytest
+pytest-xdist

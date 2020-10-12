@@ -24,10 +24,11 @@ from selenium.webdriver.common.keys import Keys
 
 
 class AutomationMethods:
-
     def __init__(self):
         self.config = ConfigParser()
-        self.reports_path = self.get_path_from_dictionary_name(dictionary_name="reports")
+        self.reports_path = self.get_path_from_dictionary_name(
+            dictionary_name="reports"
+        )
 
     # template of date example >> 20200715
     def current_date_str_from_number(self, sub_day=0) -> str:
@@ -36,11 +37,12 @@ class AutomationMethods:
         current_date_template = str(date_solution).replace("-", "")
         return current_date_template
 
-    def removing_directories_in_reports_by_number_of_day(self, n_day: int) -> str:
+    def removing_directories_in_reports_by_number_of_day(self, n_day: int):
         list_remove_directory = []
         current_date_sub_days = int(self.current_date_str_from_number(sub_day=-n_day))
 
         entries = Path(self.reports_path)
+
         for entry in entries.iterdir():
             try:
                 if int(entry.name) <= current_date_sub_days:
@@ -73,14 +75,25 @@ class AutomationMethods:
 
         report_name = f"{domain_strip}-{browser}"
 
-        runner = HtmlTestRunner.HTMLTestRunner(output=output + current_date_template, combine_reports=True,
-                                               report_title=report_title, report_name=report_name, verbosity=2,
-                                               failfast=False, descriptions=True, buffer=False)
+        runner = HtmlTestRunner.HTMLTestRunner(
+            output=output + current_date_template,
+            combine_reports=True,
+            report_title=report_title,
+            report_name=report_name,
+            verbosity=2,
+            failfast=False,
+            descriptions=True,
+            buffer=False,
+        )
         return runner
 
     def run_pytest_html_and_allure_report(self, by_name=None) -> list:
-        allure_json_path = self.get_path_from_dictionary_name(dictionary_name="allure_json")
-        allure_html_reports_path = self.get_path_from_dictionary_name(dictionary_name="HTML_reports")
+        allure_json_path = self.get_path_from_dictionary_name(
+            dictionary_name="allure_json"
+        )
+        allure_html_reports_path = self.get_path_from_dictionary_name(
+            dictionary_name="HTML_reports"
+        )
 
         current_date = self.current_date_str_from_number()
 
@@ -90,13 +103,16 @@ class AutomationMethods:
         else:
             flag_and_name = ""
         os.system(
-            f"pytest {flag_and_name} --html={pytest_html_report_path} --self-contained-html --alluredir {allure_json_path} -v")
+            f"pytest {flag_and_name} --html={pytest_html_report_path} --self-contained-html --alluredir {allure_json_path} -v"
+        )
         os.chdir(allure_html_reports_path)
         os.system(f"allure generate {allure_json_path} --clean")
         allure_index_path = allure_html_reports_path + "\\allure-report"
         pytest_path = pytest_html_report_path.replace("\\", "/")
         allure_path = allure_index_path.replace("\\", "/")
-        allure_zip = shutil.make_archive(base_name=allure_path, format="zip", root_dir=allure_html_reports_path)
+        allure_zip = shutil.make_archive(
+            base_name=allure_path, format="zip", root_dir=allure_html_reports_path
+        )
         print(allure_zip.title(), " is DONE !")
         allure_zip_path = self.get_path_from_file_name(file_name="allure-report.zip")
         allure_zip_path = allure_zip_path.replace("\\", "/")
@@ -143,19 +159,27 @@ class AutomationMethods:
                 slice_links.add(element)
         return slice_links
 
-    def get_driver(self, browser_name="chrome", headless=True, ie_del_cashe=False, firefox_del_cashe=False,
-                   chrome_del_cash=False):
+    def get_driver(
+        self,
+        browser_name="chrome",
+        headless=True,
+        ie_del_cashe=False,
+        firefox_del_cashe=False,
+        chrome_del_cash=False,
+    ):
         if browser_name == "chrome":
             chrome_options = webdriver.ChromeOptions()
 
             if headless:
-                chrome_options.add_argument('--headless')
+                chrome_options.add_argument("--headless")
 
             chrome_path = self.get_path_from_file_name(file_name="chromedriver.exe")
-            driver = webdriver.Chrome(executable_path=chrome_path, options=chrome_options)
+            driver = webdriver.Chrome(
+                executable_path=chrome_path, options=chrome_options
+            )
 
             if chrome_del_cash:
-                driver.get('chrome://settings/clearBrowserData')
+                driver.get("chrome://settings/clearBrowserData")
                 action = ActionChains(driver)
                 time.sleep(2)
                 action.send_keys(Keys.ENTER).perform()
@@ -168,13 +192,15 @@ class AutomationMethods:
         elif browser_name == "ie":
             if ie_del_cashe:
                 caps = DesiredCapabilities.INTERNETEXPLORER
-                caps['ignoreProtectedModeSettings'] = True
-                caps['enableElementCacheCleanup'] = True
-                caps['ie.ensureCleanSession'] = True
+                caps["ignoreProtectedModeSettings"] = True
+                caps["enableElementCacheCleanup"] = True
+                caps["ie.ensureCleanSession"] = True
             else:
                 caps = {}
 
-            ie_path = AutomationMethods.get_path_from_file_name(file_name="IEDriverServer.exe")
+            ie_path = AutomationMethods.get_path_from_file_name(
+                file_name="IEDriverServer.exe"
+            )
             driver = webdriver.Ie(executable_path=ie_path, capabilities=caps)
             driver.set_page_load_timeout(30)
             driver.implicitly_wait(1)
@@ -186,27 +212,38 @@ class AutomationMethods:
             profile.accept_untrusted_certs = True
 
             if firefox_del_cashe:
-                profile.set_preference('browser.cache.disk.enable', False)
-                profile.set_preference('browser.cache.memory.enable', False)
-                profile.set_preference('browser.cache.offline.enable', False)
-                profile.set_preference('network.http.use-cache', False)
+                profile.set_preference("browser.cache.disk.enable", False)
+                profile.set_preference("browser.cache.memory.enable", False)
+                profile.set_preference("browser.cache.offline.enable", False)
+                profile.set_preference("network.http.use-cache", False)
 
             firefox_options = webdriver.FirefoxOptions()
             if headless:
-                firefox_options.add_argument('--headless')
+                firefox_options.add_argument("--headless")
 
-            firefox_path = AutomationMethods.get_path_from_file_name(file_name="geckodriver.exe")
-            driver = webdriver.Firefox(executable_path=firefox_path, firefox_profile=profile,
-                                       options=firefox_options)
+            firefox_path = AutomationMethods.get_path_from_file_name(
+                file_name="geckodriver.exe"
+            )
+            driver = webdriver.Firefox(
+                executable_path=firefox_path,
+                firefox_profile=profile,
+                options=firefox_options,
+            )
             driver.set_page_load_timeout(30)
             driver.implicitly_wait(1)
             driver.maximize_window()
             return driver
 
-    def get_screenshot(self, name: str, driver: webdriver, dictionary_path: str) -> None:
+    def get_screenshot(
+        self, name: str, driver: webdriver, dictionary_path: str
+    ) -> None:
         original_size = driver.get_window_size()
-        required_width = driver.execute_script('return document.body.parentNode.scrollWidth')
-        required_height = driver.execute_script('return document.body.parentNode.scrollHeight')
+        required_width = driver.execute_script(
+            "return document.body.parentNode.scrollWidth"
+        )
+        required_height = driver.execute_script(
+            "return document.body.parentNode.scrollHeight"
+        )
         driver.set_window_size(required_width, required_height)
 
         if not os.path.exists(dictionary_path):
@@ -218,10 +255,11 @@ class AutomationMethods:
         time.sleep(1)
         driver.get_screenshot_as_file(path)
         time.sleep(1)
-        driver.set_window_size(original_size['width'], original_size['height'])
+        driver.set_window_size(original_size["width"], original_size["height"])
 
-    def get_screenshot_documentation_from_links(self, set_of_links: set, domain: str, driver: webdriver,
-                                                dictionary_path: str) -> dict:
+    def get_screenshot_documentation_from_links(
+        self, set_of_links: set, domain: str, driver: webdriver, dictionary_path: str
+    ) -> dict:
         driver = driver
         driver.set_page_load_timeout(30)
         incorrect_status_code = {}
@@ -231,12 +269,21 @@ class AutomationMethods:
             print("Link: ", link, "\t\t\t\t\tStatus code: ", status)
             driver.get(link)
             name = link.replace(str(domain), "").replace("/", "_")
-            self.get_screenshot(name=name, driver=driver, dictionary_path=dictionary_path)
+            self.get_screenshot(
+                name=name, driver=driver, dictionary_path=dictionary_path
+            )
             if status[0] in ["4", "3", "5"]:
                 incorrect_status_code[link] = status
         return incorrect_status_code
 
-    def send_email(self, send_to=None, subject=None, message_conntent=None, files=None, use_tls=True):
+    def send_email(
+        self,
+        send_to=None,
+        subject=None,
+        message_conntent=None,
+        files=None,
+        use_tls=True,
+    ):
         post = self.get_section_from_config(section_list=["Post"])
 
         if send_to is None:
@@ -277,14 +324,20 @@ class AutomationMethods:
 
         if files:
             for path in files:
-                with open(file=path, mode='rb') as file:
+                with open(file=path, mode="rb") as file:
                     base_name = os.path.basename(path)
                     exe = path.split(".")[-1]
-                    instance = MIMEApplication(_data=file.read(), _subtype=exe, name=base_name)
+                    instance = MIMEApplication(
+                        _data=file.read(), _subtype=exe, name=base_name
+                    )
                     # instance = MIMEBase(_maintype="Application", _subtype=exe)
                     # instance.set_payload(file.read())
                     # encoders.encode_base64(instance)
-                    instance.add_header(_name='Content-Disposition', _value='attachment', filename=base_name)
+                    instance.add_header(
+                        _name="Content-Disposition",
+                        _value="attachment",
+                        filename=base_name,
+                    )
                     message.attach(instance)
 
         with smtplib.SMTP(host=smtp_server, port=port) as server:
@@ -302,16 +355,19 @@ class AutomationMethods:
         date_dict = {
             "day": date_slice[-2:],
             "month": date_slice[5:7],
-            "year": date_slice[:4]
+            "year": date_slice[:4],
         }
         return date_dict
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     set_of_link = AutomationMethods().get_set_from_links_file(
-        file_name="files/links.csv")
+        file_name="files/links.csv"
+    )
     driver = AutomationMethods().get_driver(browser_name="ie")
-    AutomationMethods().get_screenshot_documentation_from_links(set_of_links=set_of_link,
-                                                                domain="",
-                                                                driver=driver,
-                                                                dictionary_path="../reports/ie_screen_every_page")
+    AutomationMethods().get_screenshot_documentation_from_links(
+        set_of_links=set_of_link,
+        domain="",
+        driver=driver,
+        dictionary_path="../reports/ie_screen_every_page",
+    )

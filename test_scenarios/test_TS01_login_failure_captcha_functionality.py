@@ -1,10 +1,11 @@
 import pytest
 
 from resources.automation_methods import AutomationMethods
-from resources.locators import LoginPageLocators, HomePageLocators
-from resources.page_object.home_page import HomePage
+from resources.locators import LoginPageLocators
 from resources.page_object.login_page import LoginPage
 from resources.validation_text_data import ValidationTextData as txt
+
+AutomationMethods().removing_directories_in_reports_by_number_of_day(n_day=7)
 
 data = AutomationMethods().get_section_from_config(
     section_list=["Common_data", "Staging"]
@@ -19,74 +20,69 @@ data = AutomationMethods().get_section_from_config(
     "enter_key, one_correct_login",
     [
         (
-                data["incorrect_email_1"],
-                data["incorrect_password_1"],
-                data["incorrect_email_2"],
-                data["incorrect_password_2"],
-                data["incorrect_email_3"],
-                data["incorrect_password_3"],
-                False,
-                False,
+            data["incorrect_email_1"],
+            data["incorrect_password_1"],
+            data["incorrect_email_2"],
+            data["incorrect_password_2"],
+            data["incorrect_email_3"],
+            data["incorrect_password_3"],
+            False,
+            False,
         ),  # captcha is visible after three times incorrect login
         (
-                data["incorrect_email_1"],
-                data["incorrect_password_1"],
-                data["incorrect_email_2"],
-                data["incorrect_password_2"],
-                data["incorrect_email_3"],
-                data["incorrect_password_3"],
-                True,
-                False,
+            data["incorrect_email_1"],
+            data["incorrect_password_1"],
+            data["incorrect_email_2"],
+            data["incorrect_password_2"],
+            data["incorrect_email_3"],
+            data["incorrect_password_3"],
+            True,
+            False,
         ),  # captcha is visible after three times incorrect login - use enter key
         (
-                data["incorrect_email_4"],
-                data["incorrect_password_4"],
-                data["incorrect_email_1"],
-                data["incorrect_password_2"],
-                data["incorrect_email_3"],
-                data["incorrect_password_1"],
-                False,
-                True,
+            data["incorrect_email_4"],
+            data["incorrect_password_4"],
+            data["incorrect_email_1"],
+            data["incorrect_password_2"],
+            data["incorrect_email_3"],
+            data["incorrect_password_1"],
+            False,
+            True,
         ),  # captcha is visible after three times incorrect login total quantity
         (
-                data["incorrect_email_4"],
-                data["incorrect_password_1"],
-                data["incorrect_email_1"],
-                data["incorrect_password_3"],
-                data["incorrect_email_2"],
-                data["incorrect_password_4"],
-                True,
-                True,
+            data["incorrect_email_4"],
+            data["incorrect_password_1"],
+            data["incorrect_email_1"],
+            data["incorrect_password_3"],
+            data["incorrect_email_2"],
+            data["incorrect_password_4"],
+            True,
+            True,
         ),  # captcha is visible after three times incorrect login total quantity - use enter key
-    ]
+    ],
 )
 def test_TS01_failed_login_captcha_functionality(
-        request,
-        driver,
-        test_data_from_fixture,
-        user_first,
-        password_first,
-        user_second,
-        password_second,
-        user_third,
-        password_third,
-        enter_key,
-        one_correct_login,
+    request,
+    driver,
+    base_url,
+    test_data_from_fixture,
+    user_first,
+    password_first,
+    user_second,
+    password_second,
+    user_third,
+    password_third,
+    enter_key,
+    one_correct_login,
 ):
+    # given
+    login_page = LoginPage(driver=driver, base_url=base_url)
+
     try:
-        # given
-        home_page = HomePage(driver=driver)
-        home_page.click_on(by_loctor=HomePageLocators.ICON_ACCOUNT)
-        home_page.click_on_and_wait_for_a_new_page(
-            by_loctor=HomePageLocators.LOGIN_BUTTON_IN_DROP_DOWN_SECTION
-        )
-
         if txt.LOGIN_ENDPOINT in driver.current_url:
-            home_page.assert_path_in_current_url(path=txt.LOGIN_ENDPOINT)
+            login_page.assert_path_in_current_url(path=txt.LOGIN_ENDPOINT)
         elif txt.AFTER_LOGIN_ENDPOINT_DOCTOR_PAGE in driver.current_url:
-            home_page.assert_path_in_current_url(path=txt.LOGIN_ENDPOINT_DOCTOR_PAGE)
-
-        login_page = LoginPage(driver=driver)
+            login_page.assert_path_in_current_url(path=txt.LOGIN_ENDPOINT_DOCTOR_PAGE)
 
         # when
         login_page.incorrect_login_as(
@@ -113,6 +109,7 @@ def test_TS01_failed_login_captcha_functionality(
         # then
         login_page.click_on(by_loctor=LoginPageLocators.CAPTCHA_SECTION)
         print(f"{request.node.name} is done " + "\U0001F44D")
-    except:
+
+    except Exception:
         login_page.do_screenshot(name=request.node.name)
         raise
