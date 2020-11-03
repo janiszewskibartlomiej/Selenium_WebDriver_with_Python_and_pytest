@@ -1,8 +1,28 @@
-from resources.automation_methods import AutomationMethods
+import os
+import sys
 
-if __name__ == '__main__':
-    automation_of_tests = AutomationMethods()
-    automation_of_tests.removing_directories_in_reports_by_number_of_day(n_day=7)
-    reports = automation_of_tests.run_pytest_html_and_allure_report(by_name="")
-    # config_path = automation_of_tests.get_path_from_file_name(file_name="config.cfg")
-    # automation_of_tests.send_email(files=reports)
+sys.path.append("..")
+import tests.resources.constants as const
+
+from tests.resources.automation_functions import (
+    removing_directories_in_reports_by_number_of_day,
+    run_pytest_html_and_allure_report,
+    send_email
+)
+
+if __name__ == "__main__":
+    removing_directories_in_reports_by_number_of_day(
+        n_day=int(os.environ.get("REMOVING_REPORTS_BY_NUMBER_OF_DAY"))
+    )
+    reports = run_pytest_html_and_allure_report()
+    send_email(
+        send_to=os.environ.get("ADMIN_EMAIL"),
+        subject=const.REPORTS_OF_TESTS,
+        files=reports
+    )
+
+
+
+
+
+

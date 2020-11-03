@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 from configparser import ConfigParser
 from datetime import datetime
@@ -12,13 +13,10 @@ from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
-from resources.automation_methods import AutomationMethods
-
 render_collapsed = True
 
-
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-os.environ["PATH"] += os.pathsep + PROJECT_ROOT
+sys.path.append(PROJECT_ROOT)
 
 
 def pytest_html_results_table_header(cells):
@@ -46,55 +44,52 @@ def pytest_html_results_summary(prefix, summary, postfix):
     prefix.extend(
         [
             html.p(
-                f'Domain: {AutomationMethods().get_section_from_config(section_list=["Staging"])["domain"]}'
+                f'Domain: {os.environ.get("DOMAIN")}'
             )
         ]
     )
 
 
-@pytest.fixture(name="test_data_from_fixture")
-def test_data():
-    config = ConfigParser()
-    config_path = AutomationMethods.get_path_from_file_name(file_name="config.cfg")
-    config.read(config_path)
-    data = dict()
-    common_data = config.items("Common_data")
-    data.update(dict(common_data))
-    staging_data = config.items("Staging")
-    data.update(dict(staging_data))
-    return data
-
-
-@pytest.fixture(params=["home", "expert"])
+@pytest.fixture(params=["hipp", "dlalekarzy"])
 def base_url(request):
     base_url = None
 
-    if request.param == "home":
-        base_url = AutomationMethods().get_section_from_config(section_list=["Staging"])["access"]
+    if request.param == "hipp":
+        base_url = os.environ.get("ACCESS")
 
-    if request.param == "expert":
-        base_url = AutomationMethods().get_section_from_config(section_list=["Staging"])["access_doctor_page"]
+    if request.param == "dlalekarzy":
+        base_url = os.environ.get("ACCESS_DOCTOR_PAGE")
 
     yield base_url
     pass
 
 
-@pytest.fixture(params=["chrome", "firefox", "ie"])
+@pytest.fixture(params=["chrome", "firefox"])
 def driver(
         request,
         chrome_del_cache=False,
-        chrome_headless=False,
+        chrome_headless=True,
         firefox_del_cache=False,
-        firefox_headless=False,
-        ie_del_cache=True
+        firefox_headless=True,
 ):
     driver = None
     if request.param == "chrome":
         chrome_options = webdriver.ChromeOptions()
-        if chrome_headless:
-            chrome_options.add_argument("--headless")
 
-        driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
+        chrome_options.add_argument("--disable-infobars")
+        chrome_options.add_argument("--disable-extensions")
+
+        # Pass the argument 1 to allow and 2 to block
+        chrome_options.add_experimental_option("prefs", {
+            "profile.default_content_setting_values.notifications": 2
+        })
+
+        if chrome_headless:
+            chrome_options.headless = True
+
+        driver = webdriver.Chrome(
+            executable_path=ChromeDriverManager().install(), options=chrome_options
+        )
 
         if chrome_del_cache:
             driver.get("chrome://settings/clearBrowserData")
@@ -115,7 +110,7 @@ def driver(
         firefox_options = webdriver.FirefoxOptions()
 
         if firefox_headless:
-            firefox_options.add_argument("--headless")
+            firefox_options.headless = True
 
         driver = webdriver.Firefox(
             executable_path=GeckoDriverManager().install(),
@@ -123,24 +118,9 @@ def driver(
             options=firefox_options,
         )
 
-    if request.param == "ie":
-        if ie_del_cache:
-            caps = DesiredCapabilities.INTERNETEXPLORER
-            caps["ignoreProtectedModeSettings"] = True
-            caps["enableElementCacheCleanup"] = True
-            caps["ie.ensureCleanSession"] = True
-        else:
-            caps = {}
-
-        ie_path = AutomationMethods.get_path_from_file_name(
-            file_name="IEDriverServer.exe"
-        )
-        # ie_path = "drivers/IEDriverServer.exe"
-
-        driver = webdriver.Ie(executable_path=ie_path, capabilities=caps)
-
     driver.set_page_load_timeout(30)
     driver.implicitly_wait(1)
+    driver.delete_all_cookies()
     driver.maximize_window()
     yield driver
     driver.quit()

@@ -6,3 +6,4 @@
 /resources/config.cfg
 /resources/debug.log
 *.log
+/resources/.env

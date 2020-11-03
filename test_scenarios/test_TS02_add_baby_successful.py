@@ -1,15 +1,19 @@
-import pytest
-from selenium.common import exceptions
+import os
 
-from resources.automation_methods import AutomationMethods
+import pytest
+
+import resources.constants as const
+from resources.automation_functions import (
+    removing_directories_in_reports_by_number_of_day,
+    get_date_from_delta_n_day,
+)
 from resources.locators import AddBabyLocators, ListOfChildrenLocators
 from resources.page_object.add_baby_page import AddBabyPage
 from resources.page_object.typo3_page import Typo3Page
-from resources.validation_text_data import ValidationTextData as txt
 
-AutomationMethods().removing_directories_in_reports_by_number_of_day(n_day=7)
-
-add_baby_locators = AddBabyLocators()
+removing_directories_in_reports_by_number_of_day(
+    n_day=int(os.environ.get("REMOVING_REPORTS_BY_NUMBER_OF_DAY"))
+)
 
 
 @pytest.mark.parametrize(
@@ -20,9 +24,9 @@ add_baby_locators = AddBabyLocators()
     "number_of_days",
     [
         (
-            add_baby_locators.I_AM_PREGNANT,
-            add_baby_locators.NO_GENDER_RADIO,
-            txt.NO_NAME,
+            AddBabyLocators.I_AM_PREGNANT,
+            AddBabyLocators.NO_GENDER_RADIO,
+            const.NO_NAME,
             False,
             60,
         )
@@ -31,6 +35,7 @@ add_baby_locators = AddBabyLocators()
 @pytest.mark.add_baby
 def test_TS02_successful_add_baby(
     request,
+    base_url,
     driver,
     pregnant_or_baby_born_radio,
     gender_radio,
@@ -44,13 +49,13 @@ def test_TS02_successful_add_baby(
     if "dlalekarzy" not in add_baby_page.driver.current_url:
 
         try:
-            add_baby_page.assert_path_in_current_url(path=txt.ADD_BABY_ENDPOINT)
+            add_baby_page.assert_path_in_current_url(path=const.ADD_BABY_ENDPOINT)
 
             # when
             add_baby_page.click_on(by_loctor=AddBabyLocators.ADD_BABY_BUTTON)
 
             add_baby_page.assert_element_color_hex(
-                by_locator=AddBabyLocators.I_AM_PREGNANT, color_hex=txt.ALERT_COLOR
+                by_locator=AddBabyLocators.I_AM_PREGNANT, color_hex=const.ALERT_COLOR
             )
 
             # pregnant_or_baby_born_radio
@@ -59,14 +64,14 @@ def test_TS02_successful_add_baby(
             add_baby_page.click_on(by_loctor=AddBabyLocators.ADD_BABY_BUTTON)
 
             add_baby_page.assert_element_color_hex(
-                by_locator=AddBabyLocators.NO_GENDER_RADIO, color_hex=txt.ALERT_COLOR
+                by_locator=AddBabyLocators.NO_GENDER_RADIO, color_hex=const.ALERT_COLOR
             )
 
             # gender_radio
             add_baby_page.click_on(by_loctor=gender_radio)
 
             add_baby_page.assert_element_text_in_page_source(
-                element_text=txt.REQUIRED_FIELD
+                element_text=const.REQUIRED_FIELD
             )
             assert (
                 add_baby_page.element_is_visible(AddBabyLocators.ALERT_MESSAGE) is True
@@ -85,14 +90,12 @@ def test_TS02_successful_add_baby(
                 is True
             )
 
-            future_date: dict = AutomationMethods().get_date_from_delta_n_day(
-                add_days=number_of_days
-            )
+            future_date: dict = get_date_from_delta_n_day(add_days=number_of_days)
             future_day = future_date["day"]
             future_month = future_date["month"]
             year = future_date["year"]
 
-            if pregnant_or_baby_born_radio == add_baby_locators.I_AM_PREGNANT:
+            if pregnant_or_baby_born_radio == AddBabyLocators.I_AM_PREGNANT:
                 pregnant = True
             else:
                 pregnant = False
@@ -109,7 +112,7 @@ def test_TS02_successful_add_baby(
                     is True
                 )
                 add_baby_page.assert_element_text_in_page_source(
-                    element_text=txt.I_ACCEPT
+                    element_text=const.I_ACCEPT
                 )
 
             add_baby_page.click_on_and_wait_for_a_new_page(
@@ -117,7 +120,7 @@ def test_TS02_successful_add_baby(
             )
 
             # then
-            add_baby_page.assert_path_in_current_url(path=txt.CHILDREN_LIST_ENDPOINT)
+            add_baby_page.assert_path_in_current_url(path=const.CHILDREN_LIST_ENDPOINT)
 
             assert (
                 add_baby_page.element_is_visible(
@@ -133,10 +136,10 @@ def test_TS02_successful_add_baby(
             )
             add_baby_page.assert_element_text(
                 by_locator=ListOfChildrenLocators.ALERT_CONTENT,
-                element_text=txt.CORRECT_ADDED_BABY_ALERT,
+                element_text=const.CORRECT_ADDED_BABY_ALERT,
             )
             # pregnant
-            if pregnant_or_baby_born_radio == add_baby_locators.I_AM_PREGNANT:
+            if pregnant_or_baby_born_radio == AddBabyLocators.I_AM_PREGNANT:
                 assert (
                     add_baby_page.element_is_visible(
                         by_locator=ListOfChildrenLocators.IMG_STORK
@@ -144,12 +147,12 @@ def test_TS02_successful_add_baby(
                     is True
                 )
                 add_baby_page.assert_element_text_in_page_source(
-                    element_text=txt.IMG_STORK
+                    element_text=const.IMG_STORK
                 )
 
                 add_baby_page.assert_element_text(
                     by_locator=ListOfChildrenLocators.CONFIRM_DATE_OF_BIRTH_LINK,
-                    element_text=txt.CONFIRM_BABY_BORN_DATE,
+                    element_text=const.CONFIRM_BABY_BORN_DATE,
                 )
                 assert (
                     add_baby_page.is_clickable(
@@ -158,7 +161,7 @@ def test_TS02_successful_add_baby(
                     is True
                 )
                 add_baby_page.assert_element_text_in_page_source(
-                    element_text=txt.CONFIRM_BABY_BORN_DATE
+                    element_text=const.CONFIRM_BABY_BORN_DATE
                 )
 
             # baby name
@@ -180,14 +183,14 @@ def test_TS02_successful_add_baby(
 
             # gender
             all_gender_text, gender_text = None, None
-            if gender_radio == add_baby_locators.NO_GENDER_RADIO:
-                all_gender_text = txt.NO_GENDER
+            if gender_radio == AddBabyLocators.NO_GENDER_RADIO:
+                all_gender_text = const.NO_GENDER
                 gender_text = all_gender_text[-8:]
-            elif gender_radio == add_baby_locators.MALE:
-                all_gender_text = txt.MALE_GENDER
+            elif gender_radio == AddBabyLocators.MALE:
+                all_gender_text = const.MALE_GENDER
                 gender_text = all_gender_text[-8:]
-            elif gender_radio == add_baby_locators.FEMALE:
-                all_gender_text = txt.FEMALE_GENDER
+            elif gender_radio == AddBabyLocators.FEMALE:
+                all_gender_text = const.FEMALE_GENDER
                 gender_text = all_gender_text[-11:]
 
             add_baby_page.assert_element_text(
@@ -204,9 +207,9 @@ def test_TS02_successful_add_baby(
 
             # gift
             if gift:
-                all_born_gift_text = txt.BORN_GIFT_YES
+                all_born_gift_text = const.BORN_GIFT_YES
             else:
-                all_born_gift_text = txt.NO_BORN_GIFT
+                all_born_gift_text = const.NO_BORN_GIFT
             gift_text = all_born_gift_text[-3:]
 
             assert (
@@ -220,7 +223,7 @@ def test_TS02_successful_add_baby(
                 element_text=all_born_gift_text,
             )
 
-            typo3 = Typo3Page(driver=driver)
+            typo3 = Typo3Page(driver=driver, base_url=base_url)
 
         except Exception:
             add_baby_page.do_screenshot(name=request.node.name)

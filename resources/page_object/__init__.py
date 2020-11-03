@@ -1,0 +1,1 @@
+from resources.page_object import add_baby_page, base_page, home_page, login_page, typo3_page

@@ -62,6 +62,17 @@ class ListOfChildrenLocators:
     ALERT_CONTENT = (By.XPATH, "//div[@class='alert-content']")
 
 
+class ForDoctorsPage:
+    BANNER_X_CHAR = (By.CSS_SELECTOR, ".m-fixed-button__close i")
+
+
+class FacebookPage:
+    EMAIL = (By.ID, "email")
+    PASSWORD = (By.ID, "pass")
+    GO_BACK = (By.ID, "back")
+    REFRESHE_BUTTON = (By.LINK_TEXT, "Odśwież stronę")
+
+
 class Typo3Locators:
     USERNAME_TYPO3 = (By.ID, "t3-username")
     PASSWORD_TYPO3 = (By.ID, "t3-password")
