@@ -2,9 +2,9 @@ import os
 import sys
 
 sys.path.append("..")
-import tests.resources.constants as const
+import resources.constants as const
 
-from tests.resources.automation_functions import (
+from resources.automation_functions import (
     removing_directories_in_reports_by_number_of_day,
     run_pytest_html_and_allure_report,
     send_email
