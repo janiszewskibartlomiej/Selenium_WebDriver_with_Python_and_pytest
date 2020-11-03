@@ -99,7 +99,7 @@ def run_pytest_html_and_allure_report(by_name=None) -> list:
     current_date = current_date_str_from_number()
 
     pytest_html_report_path = \
-        f"{reports_path}{os.sep}{current_date}{os.sep}pytest_hipp9-staging_report_{int(time.time())}.html"
+        f"{reports_path}{os.sep}{current_date}{os.sep}pytest_HP-staging_report_{int(time.time())}.html"
 
     flag_and_name = f"-k {by_name}" if by_name else ""
 
