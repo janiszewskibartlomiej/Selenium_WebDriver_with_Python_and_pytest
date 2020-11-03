@@ -50,7 +50,7 @@ MESSAGE = """
             Pozdro Bart
             """
 # REPORTS
-REPORTS_TITLE = "pytest Hipp9 report on staging"
+REPORTS_TITLE = "pytest report on staging"
 
 # OTHER
 TYPO3 = "typo3"
