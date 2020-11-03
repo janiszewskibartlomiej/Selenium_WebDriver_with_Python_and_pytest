@@ -20,7 +20,7 @@ from sty import fg
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
-import tests.resources.constants as const
+import resources.constants as const
 
 load_dotenv()
 

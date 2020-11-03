@@ -1,1 +1,1 @@
-from tests.resources import automation_functions, locators, constants
+from resources import automation_functions, locators, constants
