@@ -12,7 +12,7 @@ from resources.page_object.add_baby_page import AddBabyPage
 from resources.page_object.typo3_page import Typo3Page
 
 removing_directories_in_reports_by_number_of_day(
-    n_day=int(os.environ.get("REMOVING_REPORTS_BY_NUMBER_OF_DAY"))
+    n_day=int(os.getenv(key="REMOVING_REPORTS_BY_NUMBER_OF_DAY", default="7"))
 )
 
 

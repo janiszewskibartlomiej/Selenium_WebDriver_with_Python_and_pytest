@@ -8,7 +8,7 @@ from resources.locators import LoginPageLocators, ForDoctorsPage
 from resources.page_object.login_page import LoginPage
 
 removing_directories_in_reports_by_number_of_day(
-    n_day=int(os.environ.get("REMOVING_REPORTS_BY_NUMBER_OF_DAY"))
+    n_day=int(os.getenv(key="REMOVING_REPORTS_BY_NUMBER_OF_DAY", default="7"))
 )
 
 
