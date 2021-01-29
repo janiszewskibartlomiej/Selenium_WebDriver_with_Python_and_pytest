@@ -1,14 +1,12 @@
 import os
 import sys
 import time
-from configparser import ConfigParser
 from datetime import datetime
 
-from py.xml import html
 import pytest
-
+from py.xml import html
 from selenium import webdriver
-from selenium.webdriver import ActionChains, DesiredCapabilities
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
